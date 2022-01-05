@@ -1,11 +1,8 @@
 package keeper.project.et.controller
 
 import keeper.project.et.dto.DataSet
-import keeper.project.et.dto.Message
 import keeper.project.et.dto.request.auth.AccessLoginDTO
-import keeper.project.et.dto.request.auth.FindInfoDTO
 import keeper.project.et.dto.request.auth.SignUpDTO
-import keeper.project.et.dto.response.auth.ResponseIdDTO
 import keeper.project.et.service.AuthService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
@@ -20,16 +17,17 @@ class LoginController {
     // home test
     @GetMapping("/")
     fun hello(): ResponseEntity<String> {
-        var msg = "포트포워딩 테스트용";
+        val msg = "포트포워딩 테스트용";
         return ResponseEntity.ok(msg);
     }
+
+    /** login은 post, get 둘다 열어 놓고 나중에 하나 없앨 예정 */
 
     @PostMapping("/users/login")
     fun loginController(@RequestBody accessLoginDTO: AccessLoginDTO): ResponseEntity<Any> {
         return authService.loginService(accessLoginDTO)
     }
 
-    // test
     @GetMapping("/users/login")
     fun testLoginController(
         @RequestParam("userID") id: String,
@@ -50,7 +48,7 @@ class LoginController {
     }
 
     @GetMapping("/check/id")
-    fun checkUserID(@RequestParam("userID") userID: String): ResponseEntity<DataSet> {
+    fun checkUserID(@RequestParam("userID") userID: String): ResponseEntity<Any> {
         return authService.duplicateCheckUserID(userID)
     }
 
@@ -70,7 +68,7 @@ class LoginController {
         return authService.findIDWithEmail(userEmail)
     }
 
-    @GetMapping("/change/pw/email")
+    @GetMapping("/users/change/pw")
     fun changePwWithController(@RequestParam("userID")userID: String, @RequestParam("userPW")userPW:String): ResponseEntity<Any> {
         return authService.changePwWithID(userID,userPW)
     }

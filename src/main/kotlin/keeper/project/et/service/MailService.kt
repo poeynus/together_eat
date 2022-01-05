@@ -23,6 +23,10 @@ class MailService(val emailSender: JavaMailSender) {
     @Autowired
     lateinit var authDAO : AuthDAO
 
+    val message = { result : String ->
+        listOf(Message(result))
+    }
+
     fun random(): String = List(6) {
         (('a'..'z') + ('A'..'Z') + ('0'..'9')).random()
     }.joinToString("")
@@ -47,22 +51,22 @@ class MailService(val emailSender: JavaMailSender) {
         return try {
             val checkMail = authDAO.checkUserEmail(mail.to)
             if (!checkMail)
-                return ResponseEntity.status(400).body(DataSet(Message("Wrong Value")))
+                return ResponseEntity.status(400).body(DataSet(message("Not User")))
 
             val msg = createSimpleMessage(mail)
             emailSender.send(msg)
             mailDAO.loggingOTPCode(mail.to, mail.text)
 
-            ResponseEntity.status(200).body(DataSet(Message("Ok")))
+            ResponseEntity.status(200).body(DataSet(message("Success")))
         } catch (e: RuntimeException) {
-            ResponseEntity.status(500).body(DataSet(Message("Server Error")))
+            ResponseEntity.status(500).body(DataSet(message("fail")))
         }
     }
 
     fun checkOTPCode(mail: String): ResponseEntity<Any> {
         val code = CodeDTO(mailDAO.getLastOTPCode(mail))
 
-        return ResponseEntity.status(200).body(DataSet(code))
+        return ResponseEntity.status(200).body(DataSet(listOf(code)))
     }
 
 }
